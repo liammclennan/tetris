@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "browserify -t [ babelify --presets [ react ] ] app.js -o bundle.js",
+    "build": "browserify -t [ babelify --presets [ react es2015 ] ] app.js -o bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
