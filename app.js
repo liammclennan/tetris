@@ -1,12 +1,14 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var Components = require('./components');
+var Model = require('./model');
+
+var data = [new Model.O(1,1), new Model.L(1,4)];
+
 
 ReactDOM.render(
 <div>
-	<Components.OShape row={1} col={1} />
-  <Components.LShape row={1} col={4} />
-  <Components.SShape row={1} col={6} />
+  {data.map(c => <Components.ShapeView shape={c} />)}
 </div>,
     document.getElementById('container')
 );
