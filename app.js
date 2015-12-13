@@ -4,32 +4,28 @@ import * as Components from './components';
 import * as Model from './model';
 import { createStore } from 'redux'
 
-var data = [
+function reducer(state = [
   Model.makeA('O').at(new Model.Point(2,2)),
-  Model.makeA('L').at(new Model.Point(1,5))
-];
-
-function reducer(state = [], action) {
-  return data;
+  Model.makeA('L').at(new Model.Point(1,5)),
+  Model.makeA('I').at(new Model.Point(1,9)),
+  Model.makeA('T').at(new Model.Point(1,12)),
+  Model.makeA('Z').at(new Model.Point(1,16))
+], action) {
   switch (action.type) {
     case 'TICK':
-      state.push(new Model.O(action.data*2,action.data*2));
-      return state;
+      return state.map(shapes => shapes.map(s => Object.assign({}, s, {row: s.row + 1})));
     default: return state;
   }
-  return [new Model.O(1,1), new Model.L(1,4)];
 }
 
 let store = createStore(reducer);
 store.subscribe(() => {
-  console.dir(store.getState());
   ReactDOM.render(
   <div>
-    {store.getState().map(c => <Components.ShapeView shape={c} />)}
+    {store.getState().map(c => <Components.ShapeView key={c.key} shape={c} />)}
   </div>,
       document.getElementById('container')
   );
 });
 var counter = 1;
-store.dispatch({ type: 'TICK', data: counter++ });
-// setInterval(() => store.dispatch({ type: 'TICK', data: counter++ }),1000);
+setInterval(() => store.dispatch({ type: 'TICK', data: counter++ }),1000);
