@@ -3,26 +3,31 @@ export class Point {
   constructor(row,col) {
     this.row = row;
     this.col = col;
-    this.key = Math.random().toString();
   }
   add(otherPoint) {
-    var p = new Point(this.row -1 + otherPoint.row, this.col - 1 + otherPoint.col);
-    p.key = this.key;
-    return p;
+    return new Point(this.row -1 + otherPoint.row, this.col - 1 + otherPoint.col);
   }
   fallOne() {
     return new Point(this.row +1, this.col);
+  }
+  sameAs(p2) {
+    return this.row === p2.row && this.col === p2.col;
   }
 }
 
 // a tetromino
 export class Shape {
-  constructor(name, points) {
+  constructor(name, points, rotator) {
     this.name = name;
     this.points = points;
+    this.rotator = rotator;
   }
   at(point) {
     return new Piece(this, point);
+  }
+  pointsRotated(rotation) {
+    if (!this.rotator) return this.points;
+    return this.rotator(rotation);
   }
 }
 
@@ -31,15 +36,25 @@ export class Piece {
   constructor(shape, offset = new Point(1,10)) {
     this.shape = shape;
     this.offset = offset;
+    this.rotation = 'N';
   }
   points() {
-    return this.shape.points.map(point => point.add(this.offset));
+    return this.shape.pointsRotated(this.rotation).map((point,ix) => point.add(this.offset));
   }
   maxRow() {
     return Math.max.apply(null, this.points().map(point => point.row));
   }
   maxCol() {
     return Math.max.apply(null, this.points().map(point => point.col));
+  }
+  rotate() {
+    this.rotation = Piece.rotations()[(Piece.rotations().indexOf(this.rotation)+1) % 4];
+  }
+  hasPoint(point) {
+    return this.points().some(item => item.sameAs(point));
+  }
+  static rotations() {
+    return ['N','E','S','W'];
   }
 }
 
@@ -65,17 +80,27 @@ export class Game {
   startAPiece() {
     this.fallingPiece = new Piece(shapes.selectRandom());
   }
+  rotate() {
+    this.fallingPiece.rotate();
+    return this;
+  }
 }
 
 // dictionary of shape type to square offsets
 export var shapes = {
-  'O': new Shape('O', [new Point(1,1),new Point(1,2), new Point(2,1),new Point(2,2)]),
-  'I': new Shape('I', [new Point(1,1), new Point(2,1),new Point(3,1), new Point(4,1)]),
+  'O': new Shape('O', [new Point(1,1),new Point(1,2), new Point(2,1),new Point(2,2)], rotation => [new Point(1,1),new Point(1,2), new Point(2,1),new Point(2,2)]),
+  'I': new Shape('I', [new Point(1,1), new Point(2,1),new Point(3,1), new Point(4,1)], rotation => {
+    switch (rotation) {
+      case 'N': return [new Point(1,1), new Point(2,1),new Point(3,1), new Point(4,1)];
+      case 'E': return [new Point(2,1), new Point(2,2),new Point(2,3), new Point(2,4)];
+    }
+  }),
   'T': new Shape('T', [new Point(1,1), new Point(1,2), new Point(2,2), new Point(1,3)]),
   'L': new Shape('L', [new Point(1,1), new Point(2,1), new Point(1,2), new Point(1,3)]),
   'Z': new Shape('Z', [new Point(1,1), new Point(1,2), new Point(2,2), new Point(2,3)])
 };
 shapes.selectRandom = function() {
-  var index = Math.floor(Math.random()*1000000%4);
+  var index = Math.floor(Math.random()*1000000%5);
+  console.log('random index = ' + index);
   return shapes[Object.keys(shapes)[index]];
 }

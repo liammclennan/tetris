@@ -1,29 +1,33 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
+var count = 0;
+
 export var GameView = React.createClass({
   render: function () {
-    return <div className="border" style={{width: this.props.game.cols*25, height: this.props.game.rows*25}}>
+    return <div onKeyUp={this.handleKeyUp} className="border" style={{width: this.props.game.cols*25, height: this.props.game.rows*25}}>
       <PieceView piece={this.props.game.fallingPiece} />
-      <span>
-        {this.props.game.rubble.map(sq => <Square key={"row"+sq.row+"col"+sq.col} row={sq.row} col={sq.col} />)}
-      </span>
+      <RubbleView rubble={this.props.game.rubble} />
     </div>;
+  },
+  handleKeyUp: function (e) {
+    console.log('key pressed');
+    console.dir(e);
   }
 });
 
 export var PieceView = React.createClass({
   render: function () {
     return <div>
-      {this.props.piece.points().map(sq => <Square key={"row"+sq.row+"col"+sq.col} row={sq.row} col={sq.col} />)}
+      {this.props.piece.points().map(sq => <Square key={count++} row={sq.row} col={sq.col} />)}
     </div>;
   }
 });
 
-export var RubbleVew = React.createClass({
+export var RubbleView = React.createClass({
   render: function () {
     return <span>
-
+      {this.props.rubble.map(sq => <Square key={"row"+sq.row+"col"+sq.col} row={sq.row} col={sq.col} />)}
     </span>;
   }
 });
