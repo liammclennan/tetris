@@ -7,9 +7,6 @@ export class Point {
   add(otherPoint) {
     return new Point(this.row -1 + otherPoint.row, this.col - 1 + otherPoint.col);
   }
-  fallOne() {
-    return new Point(this.row +1, this.col);
-  }
   sameAs(p2) {
     return this.row === p2.row && this.col === p2.col;
   }
@@ -21,9 +18,6 @@ export class Shape {
     this.name = name;
     this.rotator = rotator;
   }
-  at(point) {
-    return new Piece(this, point);
-  }
   pointsRotated(rotation) {
     return this.rotator(rotation);
   }
@@ -31,13 +25,15 @@ export class Shape {
 
 // an instance of a tetromino on the board
 export class Piece {
-  constructor(shape, offset = new Point(1,10)) {
+  constructor(shape, rows, cols, offset = new Point(1,10)) {
     this.shape = shape;
+    this.rows = rows;
+    this.cols = cols;
     this.offset = offset;
     this.rotation = 'N';
   }
   points() {
-    return this.shape.pointsRotated(this.rotation).map((point,ix) => point.add(this.offset));
+    return this.shape.pointsRotated(this.rotation).map(point => point.add(this.offset));
   }
   maxRow() {
     return Math.max.apply(null, this.points().map(point => point.row));
@@ -45,11 +41,35 @@ export class Piece {
   maxCol() {
     return Math.max.apply(null, this.points().map(point => point.col));
   }
+  minCol() {
+    return Math.min.apply(null, this.points().map(point => point.col));
+  }
   rotate() {
     this.rotation = Piece.rotations()[(Piece.rotations().indexOf(this.rotation)+1) % 4];
+    if (this.minCol() < 0 || this.maxCol() > this.cols || this.maxRow > this.rows) {
+      debugger;
+      this.rotation = Piece.rotations()[(Piece.rotations().indexOf(this.rotation)-1) % 4];
+    }
   }
   hasPoint(point) {
     return this.points().some(item => item.sameAs(point));
+  }
+  fallOne() {
+    this.offset = new Point(this.offset.row+1, this.offset.col);
+  }
+  left() {
+    if (this.minCol() > 1) {
+      this.offset = new Point(this.offset.row, Math.max(0, this.offset.col-1));
+    }
+  }
+  right() {
+    if (this.maxCol() < this.cols) {
+      const old = this.offset;
+      this.offset = new Point(this.offset.row, this.offset.col+1);
+      if (this.maxCol() > this.cols) {
+        this.offset = old;
+      }
+    }
   }
   static rotations() {
     return ['N','E','S','W'];
@@ -64,8 +84,8 @@ export class Game {
     this.rubble = [];
   }
   tick() {
-    this.fallingPiece.offset = this.fallingPiece.offset.fallOne();
-    if (this.fallingPiece.maxRow() >= this.rows) {
+    this.fallingPiece.fallOne();
+    if (this.fallingPiece.maxRow() == this.rows) {
       this.convertToRubble();
     }
     return this;
@@ -75,10 +95,18 @@ export class Game {
     this.startAPiece();
   }
   startAPiece() {
-    this.fallingPiece = new Piece(shapes.selectRandom());
+    this.fallingPiece = new Piece(shapes.selectRandom(), this.rows, this.cols);
   }
   rotate() {
     this.fallingPiece.rotate();
+    return this;
+  }
+  left() {
+    this.fallingPiece.left();
+    return this;
+  }
+  right() {
+    this.fallingPiece.right(this.cols);
     return this;
   }
 }
