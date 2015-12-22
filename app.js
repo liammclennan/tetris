@@ -20,11 +20,13 @@ function reducer(state = new Model.Game(), action) {
   }
 }
 
+Mousetrap.bind('space', function() { store.dispatch({type:'ROTATE'}); });
+Mousetrap.bind('left', function() { store.dispatch({type:'LEFT'}); });
+Mousetrap.bind('right', function() { store.dispatch({type:'RIGHT'}); });
+
 let store = createStore(reducer);
 store.subscribe(() => {
   ReactDOM.render(<Components.GameView game={store.getState()} />, document.getElementById('container'));
 });
+
 setInterval(() => store.dispatch({ type: 'TICK' }),500);
-Mousetrap.bind('space', function() { store.dispatch({type:'ROTATE'}); });
-Mousetrap.bind('left', function() { store.dispatch({type:'LEFT'}); });
-Mousetrap.bind('right', function() { store.dispatch({type:'RIGHT'}); });

@@ -63,10 +63,13 @@ export class Piece {
     }
   }
   right() {
+    console.log('right: maxCol() = ' + this.maxCol() + ' cols = ' + this.cols);
     if (this.maxCol() < this.cols) {
+      console.log('right: with room');
       const old = this.offset;
       this.offset = new Point(this.offset.row, this.offset.col+1);
       if (this.maxCol() > this.cols) {
+        console.log('right: moved too far');
         this.offset = old;
       }
     }
@@ -78,9 +81,9 @@ export class Piece {
 
 export class Game {
   constructor() {
-    this.startAPiece();
     this.rows = 15;
     this.cols = 20;
+    this.startAPiece();
     this.rubble = [];
   }
   tick() {
@@ -106,7 +109,7 @@ export class Game {
     return this;
   }
   right() {
-    this.fallingPiece.right(this.cols);
+    this.fallingPiece.right();
     return this;
   }
 }
