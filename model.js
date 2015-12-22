@@ -46,10 +46,9 @@ export class Piece {
   }
   rotate() {
     this.rotation = Piece.rotations()[(Piece.rotations().indexOf(this.rotation)+1) % 4];
-    if (this.minCol() < 0 || this.maxCol() > this.cols || this.maxRow > this.rows) {
-      debugger;
-      this.rotation = Piece.rotations()[(Piece.rotations().indexOf(this.rotation)-1) % 4];
-    }
+  }
+  unRotate() {
+    this.rotation = Piece.rotations()[(Piece.rotations().indexOf(this.rotation)-1) % 4];
   }
   hasPoint(point) {
     return this.points().some(item => item.sameAs(point));
@@ -57,22 +56,14 @@ export class Piece {
   fallOne() {
     this.offset = new Point(this.offset.row+1, this.offset.col);
   }
+  liftOne() {
+    this.offset = new Point(this.offset.row-1, this.offset.col);
+  }
   left() {
-    if (this.minCol() > 1) {
-      this.offset = new Point(this.offset.row, Math.max(0, this.offset.col-1));
-    }
+    this.offset = new Point(this.offset.row, this.offset.col-1);
   }
   right() {
-    console.log('right: maxCol() = ' + this.maxCol() + ' cols = ' + this.cols);
-    if (this.maxCol() < this.cols) {
-      console.log('right: with room');
-      const old = this.offset;
-      this.offset = new Point(this.offset.row, this.offset.col+1);
-      if (this.maxCol() > this.cols) {
-        console.log('right: moved too far');
-        this.offset = old;
-      }
-    }
+    this.offset = new Point(this.offset.row, this.offset.col+1);
   }
   static rotations() {
     return ['N','E','S','W'];
@@ -87,10 +78,15 @@ export class Game {
     this.rubble = [];
   }
   tick() {
-    this.fallingPiece.fallOne();
+    this.transactionDo(()=>this.fallingPiece.fallOne(), ()=> this.fallingPiece.liftOne());
     if (this.fallingPiece.maxRow() == this.rows) {
       this.convertToRubble();
+      return this;
     }
+    var nextPos = this.fallingPiece.points().map(p => new Point(p.row+1,p.col));
+    if (nextPos.some(p => this.rubble.some(r => r.sameAs(p)))) {
+      this.convertToRubble();
+    };
     return this;
   }
   convertToRubble() {
@@ -101,16 +97,30 @@ export class Game {
     this.fallingPiece = new Piece(shapes.selectRandom(), this.rows, this.cols);
   }
   rotate() {
-    this.fallingPiece.rotate();
+    this.transactionDo(()=>this.fallingPiece.rotate(), ()=> this.fallingPiece.unRotate());
     return this;
   }
   left() {
-    this.fallingPiece.left();
+    this.transactionDo(()=>this.fallingPiece.left(), ()=> this.fallingPiece.right());
     return this;
   }
   right() {
-    this.fallingPiece.right();
+    this.transactionDo(()=>this.fallingPiece.right(), ()=> this.fallingPiece.left());
     return this;
+  }
+  fallingPieceIsOutOfBounds() {
+    return this.fallingPiece.minCol() < 1 ||
+      this.fallingPiece.maxCol() > this.cols ||
+      this.fallingPiece.maxRow() > this.rows;
+  }
+  fallingPieceOverlapsRubble() {
+    return this.fallingPiece.points().some(p => this.rubble.some(r => r.sameAs(p)));
+  }
+  transactionDo(thing, compensation) {
+    thing();
+    if (this.fallingPieceIsOutOfBounds() || this.fallingPieceOverlapsRubble()) {
+      compensation();
+    }
   }
 }
 
@@ -153,6 +163,5 @@ export var shapes = {
 };
 shapes.selectRandom = function() {
   var index = Math.floor(Math.random()*1000000%5);
-  console.log('random index = ' + index);
   return shapes[Object.keys(shapes)[index]];
 }
