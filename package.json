@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "away": "node node_modules/gulp/bin/gulp.js"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
