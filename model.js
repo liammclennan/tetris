@@ -91,7 +91,7 @@ export class Game {
   }
   convertToRubble() {
     this.rubble = this.rubble.concat(this.fallingPiece.points());
-    this.completedRows().forEach(rowNum => this.collapseRow());
+    this.completedRows().forEach(this.collapseRow);
     this.startAPiece();
   }
   completedRows() {
@@ -101,6 +101,7 @@ export class Game {
   }
   collapseRow(row) {
     this.rubble = this.rubble.filter(point => point.row !== row);
+    // todo: shuffle higher rubble down
   }
   rubbleHas(row,col) {
     return this.rubble.some(point => point.row === row && point.col === col);
