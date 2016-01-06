@@ -1,23 +1,15 @@
-import * as _ from 'underscore';
-
 export class Point {
-  constructor(row,col) {
-    this.row = row;
-    this.col = col;
-  }
-  add(otherPoint) {
-    return new Point(this.row -1 + otherPoint.row, this.col - 1 + otherPoint.col);
-  }
-  sameAs(p2) {
-    return this.row === p2.row && this.col === p2.col;
-  }
+    constructor(public row:number, public col:number) {}
+    add(otherPoint) {
+      return new Point(this.row -1 + otherPoint.row, this.col - 1 + otherPoint.col);
+    }
+    sameAs(p2) {
+      return this.row === p2.row && this.col === p2.col;
+    }
 }
 
 export class Tetromino {
-  constructor(name, rotator) {
-    this.name = name;
-    this.rotator = rotator;
-  }
+  constructor(public name:string, public rotator: (rotation:string)=>Point[]) {}
   pointsRotated(rotation) {
     return this.rotator(rotation);
   }
@@ -25,11 +17,8 @@ export class Tetromino {
 
 // an instance of a tetromino on the board
 export class Piece {
-  constructor(shape, rows, cols, offset = new Point(1,10)) {
-    this.shape = shape;
-    this.rows = rows;
-    this.cols = cols;
-    this.offset = offset;
+  public rotation:string;
+  constructor(public shape:Tetromino, public rows:number, public cols:number, public offset = new Point(1,10)) {
     this.rotation = 'N';
   }
   points() {
@@ -71,6 +60,10 @@ export class Piece {
 }
 
 export class Game {
+  rows: number;
+  cols: number;
+  rubble: Point[];
+  fallingPiece: Piece;
   constructor() {
     this.rows = 15;
     this.cols = 20;
@@ -91,23 +84,10 @@ export class Game {
   }
   convertToRubble() {
     this.rubble = this.rubble.concat(this.fallingPiece.points());
-    this.completedRows().forEach(this.collapseRow);
     this.startAPiece();
   }
-  completedRows() {
-    return _.range(1,this.rows+1).filter(row =>
-      _.range(1,this.cols+1).every(col => this.rubbleHas(row,col))
-    );
-  }
-  collapseRow(row) {
-    this.rubble = this.rubble.filter(point => point.row !== row);
-    // todo: shuffle higher rubble down
-  }
-  rubbleHas(row,col) {
-    return this.rubble.some(point => point.row === row && point.col === col);
-  }
   startAPiece() {
-    this.fallingPiece = new Piece(shapes.selectRandom(), this.rows, this.cols);
+    this.fallingPiece = new Piece(selectRandomShape(), this.rows, this.cols);
   }
   rotate() {
     this.transactionDo(()=>this.fallingPiece.rotate(), ()=> this.fallingPiece.unRotate());
@@ -174,7 +154,8 @@ export var shapes = {
     }
   })
 };
-shapes.selectRandom = function() {
+
+function selectRandomShape() : Tetromino {
   var index = Math.floor(Math.random()*1000000%5);
   return shapes[Object.keys(shapes)[index]];
 }
