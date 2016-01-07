@@ -19,9 +19,12 @@
     "redux": "^3.0.5"
   },
   "devDependencies": {
+    "tsd": "^0.6.5",
+    "typescript": "^1.7.5",
     "babel-cli": "^6.3.17",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-react": "^6.3.13",
+    "babel-register": "^6.3.13",
     "browserify": "^12.0.1",
     "gulp": "^3.9.0",
     "gulp-shell": "^0.5.1"

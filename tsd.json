@@ -40,6 +40,15 @@
     },
     "mousetrap/mousetrap.d.ts": {
       "commit": "dab0fb7cb7dc9bd46a4282508f77241fbd42cbbb"
+    },
+    "mocha/mocha.d.ts": {
+      "commit": "81b951f1ac437d1eb5ff5171a0bfa6c467634b13"
+    },
+    "node/node.d.ts": {
+      "commit": "81b951f1ac437d1eb5ff5171a0bfa6c467634b13"
+    },
+    "underscore/underscore.d.ts": {
+      "commit": "81b951f1ac437d1eb5ff5171a0bfa6c467634b13"
     }
   }
 }
