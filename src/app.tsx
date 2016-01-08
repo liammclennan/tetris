@@ -9,6 +9,8 @@ import {createStore} from 'redux';
 import * as Mousetrap from 'mousetrap';
 
 function reducer(state = new Model.Game(()=>{}), action) {
+  if (state.finished) return state;
+
   switch (action.type) {
       case 'TICK':
         const revedState = state.tick();
