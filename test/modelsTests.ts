@@ -14,7 +14,7 @@ describe('models', function () {
     describe('full rows', ()=> {
 
       describe('game with last row full', ()=> {
-        var game = new Models.Game();
+        var game = new Models.Game(()=>{});
         game.rubble = _.range(1, game.cols+1).map(col => new Models.Point(game.rows, col));
 
         it('should have one completed row', ()=> assert.equal(1, game.completedRows().length));
@@ -22,7 +22,7 @@ describe('models', function () {
       });
 
       describe('collapsing', ()=> {
-        var game = new Models.Game();
+        var game = new Models.Game(()=>{});
 
         var row14 =  [new Models.Point(game.rows-1,1), new Models.Point(game.rows-1, 2)];
         game.rubble = _.range(1, game.cols+1)
@@ -30,10 +30,11 @@ describe('models', function () {
           .concat(row14);
 
         it('should move row 14 to row 15 (collapse)', ()=> {
+          assert.equal(22, game.rubble.length);
           game.collapseRow(15);
-          assert.equal(2, game.rubble.length);
-          assert.ok(_.some(game.rubble, point => point.row === 15 && point.col === 1));
-          assert.ok(_.some(game.rubble, point => point.row === 15 && point.col === 2));
+          assert.equal(2, game.rubble.length, 'the full row has been deleted');
+          assert.ok(_.some(game.rubble, point => point.row === 15 && point.col === 1), 'a point from the 2nd row has moved down');
+          assert.ok(_.some(game.rubble, point => point.row === 15 && point.col === 2), 'the other point from the 2nd row has moved down');
         });
       });
     });

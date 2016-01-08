@@ -8,11 +8,13 @@ import * as Model from './model';
 import {createStore} from 'redux';
 import * as Mousetrap from 'mousetrap';
 
-function reducer(state = new Model.Game(), action) {
+function reducer(state = new Model.Game(()=>{}), action) {
   switch (action.type) {
       case 'TICK':
         const revedState = state.tick();
-        setTimeout(() => store.dispatch({ type: 'TICK' }),300);
+        if (!revedState.finished) {
+          setTimeout(() => store.dispatch({ type: 'TICK' }),300);
+        }
         return revedState;
       case 'ROTATE':
         return state.rotate();
@@ -28,7 +30,8 @@ Mousetrap.bind('space', ()=> store.dispatch({type:'ROTATE'}));
 Mousetrap.bind('left', ()=> store.dispatch({type:'LEFT'}));
 Mousetrap.bind('right', ()=> store.dispatch({type:'RIGHT'}));
 
-let store = createStore(reducer);
+const store = createStore(reducer);
+
 store.subscribe(() => {
   ReactDOM.render(<Components.GameView game={store.getState()} />, document.getElementById('container'));
 });

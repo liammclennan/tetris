@@ -66,7 +66,8 @@ export class Game {
   cols: number;
   rubble: Point[];
   fallingPiece: Piece;
-  constructor() {
+  finished: boolean;
+  constructor(private dispatcher: (any)=>any) {
     this.rows = 15;
     this.cols = 20;
     this.startAPiece();
@@ -87,7 +88,13 @@ export class Game {
   convertToRubble() {
     this.rubble = this.rubble.concat(this.fallingPiece.points());
     this.completedRows().forEach(r => this.collapseRow(r));
-    this.startAPiece();
+    this.finished = this.isGameOver();
+    if (!this.finished) {
+      this.startAPiece();
+    }
+  }
+  isGameOver() {
+    return this.rubble.some(point => point.row === 1);
   }
   startAPiece() {
     this.fallingPiece = new Piece(selectRandomShape(), this.rows, this.cols);

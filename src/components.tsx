@@ -12,8 +12,12 @@ interface GameViewProps {
 export var GameView = React.createClass<GameViewProps,any>({
   render: function () {
     return <div onKeyUp={this.handleKeyUp} className="border" style={{width: this.props.game.cols*25, height: this.props.game.rows*25}}>
-      <PieceView piece={this.props.game.fallingPiece} />
-      <RubbleView rubble={this.props.game.rubble} />
+      { this.props.game.finished ?
+        <span>GAME OVER</span> : <span>
+        <PieceView piece={this.props.game.fallingPiece} />
+        <RubbleView rubble={this.props.game.rubble} />
+        </span>
+      }
     </div>;
   },
   handleKeyUp: function (e) {
