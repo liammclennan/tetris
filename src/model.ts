@@ -1,4 +1,6 @@
-export class Point {
+import * as _ from 'underscore';
+
+  export class Point {
     constructor(public row:number, public col:number) {}
     add(otherPoint) {
       return new Point(this.row -1 + otherPoint.row, this.col - 1 + otherPoint.col);
@@ -84,6 +86,7 @@ export class Game {
   }
   convertToRubble() {
     this.rubble = this.rubble.concat(this.fallingPiece.points());
+    this.completedRows().forEach(r => this.collapseRow(r));
     this.startAPiece();
   }
   startAPiece() {
@@ -114,6 +117,18 @@ export class Game {
     if (this.fallingPieceIsOutOfBounds() || this.fallingPieceOverlapsRubble()) {
       compensation();
     }
+  }
+  completedRows() {
+    return _.range(1,this.rows+1).filter(row =>
+      _.range(1,this.cols+1).every(col => this.rubbleHas(row,col))
+    );
+  }
+  collapseRow(row) {
+    this.rubble = this.rubble.filter(point => point.row !== row);
+    this.rubble.filter(point => point.row < row).forEach(point => point.row += 1);
+  }
+  rubbleHas(row,col) {
+    return this.rubble.some(point => point.row === row && point.col === col);
   }
 }
 
