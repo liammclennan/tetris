@@ -19,6 +19,7 @@
     "redux": "^3.0.5"
   },
   "devDependencies": {
+    "mocha": "^2.3.4",
     "tsd": "^0.6.5",
     "typescript": "^1.7.5",
     "babel-cli": "^6.3.17",
