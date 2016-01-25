@@ -9,12 +9,12 @@ import {createStore} from 'redux';
 import * as Mousetrap from 'mousetrap';
 
 function reducer(state = new Model.Game(()=>{}), action) {
-  if (state.finished) return state;
+  if (state.isGameOver()) return state;
 
   switch (action.type) {
       case 'TICK':
         const revedState = state.tick();
-        if (!revedState.finished) {
+        if (!revedState.isGameOver()) {
           setTimeout(() => store.dispatch({ type: 'TICK' }),300);
         }
         return revedState;

@@ -66,12 +66,13 @@ export class Game {
   cols: number;
   rubble: Point[];
   fallingPiece: Piece;
-  finished: boolean;
+  score: number;
   constructor(private dispatcher: (any)=>any) {
     this.rows = 15;
     this.cols = 20;
     this.startAPiece();
     this.rubble = [];
+    this.score = 0;
   }
   tick() {
     this.transactionDo(()=>this.fallingPiece.fallOne(), ()=> this.fallingPiece.liftOne());
@@ -87,11 +88,22 @@ export class Game {
   }
   convertToRubble() {
     this.rubble = this.rubble.concat(this.fallingPiece.points());
-    this.completedRows().forEach(r => this.collapseRow(r));
-    this.finished = this.isGameOver();
-    if (!this.finished) {
+    const completedRows = this.completedRows();
+    completedRows.forEach(r => this.collapseRow(r));
+    this.score += this.calculateAward(completedRows);
+    if (!this.isGameOver()) {
       this.startAPiece();
     }
+  }
+  calculateAward(completedRows) {
+    const map = {
+      0: 0,
+      1: 40,
+      2: 100,
+      3: 300,
+      4: 1200
+    };
+    return map[completedRows.length];
   }
   isGameOver() {
     return this.rubble.some(point => point.row === 1);
@@ -132,7 +144,8 @@ export class Game {
   }
   collapseRow(row) {
     this.rubble = this.rubble.filter(point => point.row !== row);
-    this.rubble.filter(point => point.row < row).forEach(point => point.row += 1);
+    const higherPoints = this.rubble.filter(point => point.row < row);
+    higherPoints.forEach(point => point.row += 1);
   }
   rubbleHas(row,col) {
     return this.rubble.some(point => point.row === row && point.col === col);

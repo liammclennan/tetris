@@ -11,25 +11,27 @@ interface GameViewProps {
 }
 export var GameView = React.createClass<GameViewProps,any>({
   render: function () {
-    return <div onKeyUp={this.handleKeyUp} className="border" style={{width: this.props.game.cols*25, height: this.props.game.rows*25}}>
-      { this.props.game.finished ?
+    return <div className="border" style={{width: this.props.game.cols*25, height: this.props.game.rows*25}}>
+      { this.props.game.isGameOver() ?
         <span>GAME OVER</span> : <span>
         <PieceView piece={this.props.game.fallingPiece} />
         <RubbleView rubble={this.props.game.rubble} />
+        <ScoreView score={this.props.game.score} />
         </span>
       }
     </div>;
-  },
-  handleKeyUp: function (e) {
-    console.log('key pressed');
-    console.dir(e);
   }
 });
 
-interface PieceViewProps {
-  piece: Model.Piece;
-}
-export var PieceView = React.createClass<PieceViewProps,any>({
+interface ScoreViewProps { score:number; }
+const ScoreView = React.createClass<ScoreViewProps,any>({
+  render: function () {
+    return <div className="score-display">{this.props.score}</div>;
+  }
+});
+
+interface PieceViewProps { piece: Model.Piece; }
+const PieceView = React.createClass<PieceViewProps,any>({
   render: function () {
     return <div>
       {this.props.piece.points().map(sq => <Square key={(count++).toString()} row={sq.row} col={sq.col} />)}
@@ -38,7 +40,7 @@ export var PieceView = React.createClass<PieceViewProps,any>({
 });
 
 interface RubbleViewProps { rubble: Model.Point[] }
-export var RubbleView = React.createClass<RubbleViewProps,any>({
+const RubbleView = React.createClass<RubbleViewProps,any>({
   render: function () {
     return <span>
       {this.props.rubble.map(sq => <Square key={(count++).toString()} row={sq.row} col={sq.col} />)}
@@ -51,7 +53,7 @@ interface SquareProps {
   col:number;
   key:string;
 }
-export var Square = React.createClass<SquareProps,any>({
+const Square = React.createClass<SquareProps,any>({
     render: function() {
     		var s = {
         	left: (this.props.col-1) * 25 + 'px',
