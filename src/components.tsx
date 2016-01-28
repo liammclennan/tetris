@@ -13,7 +13,7 @@ export var GameView = React.createClass<GameViewProps,any>({
   render: function () {
     return <div className="border" style={{width: this.props.game.cols*25, height: this.props.game.rows*25}}>
       { this.props.game.isGameOver() ?
-        <span>GAME OVER</span> : <span>
+        <span className="score-display">GAME OVER</span> : <span>
         <PieceView piece={this.props.game.fallingPiece} />
         <RubbleView rubble={this.props.game.rubble} />
         <ScoreView score={this.props.game.score} />

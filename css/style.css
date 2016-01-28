@@ -1,0 +1,39 @@
+.square {
+  background-color: #eee;
+  box-shadow: inset 0 0 10px #f05f40;
+  width: 25px;
+  height: 25px;
+  position:absolute;
+}
+
+.border {
+  position: absolute;
+  background-color: rgba(255,255,255,.7);
+}
+
+div,body {padding:0;margin:0}
+
+.score-display {
+  position: absolute;
+  right:10px;
+  top:5px;
+  opacity: 0.4;
+  color: #666;
+  font: 2em "Open Sans", sans-serif;
+}
+
+.rcol {
+  position: relative;
+left: 450px;
+width: 60%;
+text-align: left;
+margin-left: 60px;
+}
+
+.key {
+  width: 30px;
+}
+
+.bg-primary a {
+  color: rgba(255,255,255,.7);
+}

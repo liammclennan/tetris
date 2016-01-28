@@ -15,7 +15,7 @@ function reducer(state = new Model.Game(()=>{}), action) {
       case 'TICK':
         const revedState = state.tick();
         if (!revedState.isGameOver()) {
-          setTimeout(() => store.dispatch({ type: 'TICK' }),300);
+          setTimeout(() => store.dispatch({ type: 'TICK' }),600);
         }
         return revedState;
       case 'ROTATE':
@@ -28,7 +28,7 @@ function reducer(state = new Model.Game(()=>{}), action) {
   }
 }
 
-Mousetrap.bind('space', ()=> store.dispatch({type:'ROTATE'}));
+Mousetrap.bind('up', ()=> store.dispatch({type:'ROTATE'}));
 Mousetrap.bind('left', ()=> store.dispatch({type:'LEFT'}));
 Mousetrap.bind('right', ()=> store.dispatch({type:'RIGHT'}));
 
